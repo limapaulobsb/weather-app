@@ -1,9 +1,11 @@
 const API_KEY = 'd3d6d3e42626a9197b7d1fd4072ddd88';
+const searchInput = document.getElementById('search-input');
+const searchButton = document.getElementById('search-button');
 
-async function fetchWeatherData(cityName) {
+async function fetchWeatherData(searchTerm, units) {
   try {
     const response = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?appid=${API_KEY}&units=metric&q=${cityName}`
+      `https://api.openweathermap.org/data/2.5/weather?appid=${API_KEY}&units=${units}&q=${searchTerm}`
     );
     return await response.json();
   } catch (error) {
@@ -11,41 +13,49 @@ async function fetchWeatherData(cityName) {
   }
 }
 
-
-const searchButton = document.getElementById('search-button');
-const searchInput = document.getElementById('search-input');
-
 async function showData() {
   const searchTerm = searchInput.value;
-  const data = await fetchWeatherData(searchTerm);
+  let units, tempSymbol, speedUnit;
+
+  if (document.getElementById('celcius').checked) {
+    units = 'metric';
+    tempSymbol = '&deg;C';
+    speedUnit = 'm/s';
+  } else {
+    units = 'imperial';
+    tempSymbol = '&deg;F';
+    speedUnit = 'mph';
+  }
+
+  const data = await fetchWeatherData(searchTerm, units);
 
   const weatherDataElem = document.getElementById('weather-data');
   weatherDataElem.style.visibility = 'visible';
 
   const cityName = data.name;
   const temperature = data.main.temp;
-  const weatherDescription = data.weather[0].description;
+  const weatherDesc = data.weather[0].description;
   const humidity = data.main.humidity;
   const windSpeed = data.wind.speed;
 
   const locationElem = document.getElementById('location');
   const temperatureElem = document.getElementById('temperature');
-  const degreeSymbolElem = document.getElementById('degree-symbol');
+  const tempSymbolElem = document.getElementById('temp-symbol');
   const weatherDescElem = document.getElementById('weather-description');
   const humidityElem = document.getElementById('humidity');
   const windSpeedElem = document.getElementById('wind-speed');
 
   locationElem.innerText = cityName;
   temperatureElem.innerText = Math.floor(temperature);
-  degreeSymbolElem.innerHTML = '&deg;C';
+  tempSymbolElem.innerHTML = tempSymbol;
   weatherDescElem.innerText =
-    weatherDescription.charAt(0).toUpperCase() + weatherDescription.slice(1);
+    weatherDesc.charAt(0).toUpperCase() + weatherDesc.slice(1);
   humidityElem.innerText = `Humidity levels at: ${humidity}%`;
-  windSpeedElem.innerText = `Winds at: ${Math.floor(windSpeed)} m/s`;
+  windSpeedElem.innerText = `Winds at: ${Math.floor(windSpeed)} ${speedUnit}`;
 
   console.log(data);
   console.log(data.weather[0].main);
-  console.log(weatherDescription);
+  console.log(weatherDesc);
   console.log(temperature);
   console.log(data.main.feels_like);
   console.log(data.main.temp_min);

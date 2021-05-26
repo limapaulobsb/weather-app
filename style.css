@@ -23,34 +23,70 @@ header {
   align-items: center;
 }
 
-input[type=text] {
-  height: 30px;
-  border: 1px solid #eee;
-  border-radius: 3px;
-  outline: none;
-  padding-left: 5px;
-}
-
-input[type=button] {
-  height: 30px;
-  border: 1px solid #eee;
-  border-radius: 6px;
-  padding: 0 12px;
-  background-color: transparent;
-  color: inherit;
-  cursor: pointer;
+header a {
+  height: 32px;
 }
 
 main {
-  flex-grow: 10;
-  padding-top: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#search-ctn {
+  width: 400px;
+  margin: 40px 0;
+  border-radius: 12px;
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.75);
+  box-shadow: 0 0 4px black;
   display: flex;
   justify-content: center;
 }
 
+#use-location-ctn {
+  display: flex;
+  align-items: center;
+}
+
+#use-location-ctn img {
+  margin-right: 5px;
+}
+
+#search-input-ctn {
+  margin: 20px 0 10px;
+}
+
+#search-ctn label {
+  margin-right: 10px;
+}
+
+input[type='text'] {
+  width: 150px;
+  height: 30px;
+  outline: none;
+  border: 1px solid black;
+  border-radius: 3px;
+  padding: 0 5px;
+}
+
+input[type='button'] {
+  height: 30px;
+  border: 1px solid darkblue;
+  border-radius: 3px;
+  padding: 0 12px;
+  background-color: darkblue;
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.5),
+    rgba(255, 255, 255, 0)
+  );
+  color: inherit;
+  cursor: pointer;
+}
+
 #weather-data {
-  visibility: hidden;
-  min-width: 400px;
+  width: 400px;
   height: 300px;
   border-radius: 12px;
   padding: 20px;
@@ -58,6 +94,7 @@ main {
   box-shadow: 0 0 4px black;
   display: flex;
   flex-direction: column;
+  visibility: hidden;
 }
 
 #location {
@@ -74,12 +111,7 @@ main {
   font-size: 72px;
 }
 
-#degree-symbol {
+#temp-symbol {
   margin-left: 6px;
   font-size: 30px;
-}
-
-footer {
-  height: 50px;
-  background-color: black;
 }
