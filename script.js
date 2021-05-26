@@ -33,25 +33,28 @@ async function showData() {
   weatherDataElem.style.visibility = 'visible';
 
   const cityName = data.name;
+  const countryCode = data.sys.country;
   const temperature = data.main.temp;
   const weatherDesc = data.weather[0].description;
   const humidity = data.main.humidity;
   const windSpeed = data.wind.speed;
 
-  const locationElem = document.getElementById('location');
+  const cityNameElem = document.getElementById('city-name');
+  const countryFlagImg = document.getElementById('country-flag');
   const temperatureElem = document.getElementById('temperature');
   const tempSymbolElem = document.getElementById('temp-symbol');
   const weatherDescElem = document.getElementById('weather-description');
   const humidityElem = document.getElementById('humidity');
   const windSpeedElem = document.getElementById('wind-speed');
 
-  locationElem.innerText = cityName;
-  temperatureElem.innerText = Math.floor(temperature);
+  cityNameElem.innerText = cityName;
+  countryFlagImg.src = `https://www.countryflags.io/${countryCode}/shiny/24.png`;
+  temperatureElem.innerText = Math.round(temperature);
   tempSymbolElem.innerHTML = tempSymbol;
   weatherDescElem.innerText =
     weatherDesc.charAt(0).toUpperCase() + weatherDesc.slice(1);
   humidityElem.innerText = `Humidity levels at: ${humidity}%`;
-  windSpeedElem.innerText = `Winds at: ${Math.floor(windSpeed)} ${speedUnit}`;
+  windSpeedElem.innerText = `Winds at: ${Math.round(windSpeed)} ${speedUnit}`;
 
   console.log(data);
   console.log(data.weather[0].main);
