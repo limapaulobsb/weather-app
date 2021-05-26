@@ -11,11 +11,21 @@
     <header>
       <div><h1>Weather App</h1></div>
       <div>
-        <input type="text" name="" id="search-input" placeholder="City name..."/>
+        <input type="text" id="search-input" placeholder="City name..." />
         <input type="button" id="search-button" value="Search" />
       </div>
     </header>
-    <main></main>
+    <main>
+      <div id="weather-data">
+        <div id="location"></div>
+        <div id="weather-description"></div>
+        <div id="temperature-ctn">
+          <span id="temperature"></span><span id="degree-symbol"></span>
+        </div>
+        <div id="humidity"></div>
+        <div id="wind-speed"></div>
+      </div>
+    </main>
     <footer></footer>
     <script src="script.js"></script>
   </body>
