@@ -1,3 +1,5 @@
+import { DateTime } from './lib/luxon.min.js';
+
 const API_KEY = 'd3d6d3e42626a9197b7d1fd4072ddd88';
 const searchInput = document.getElementById('search-input');
 const searchButton = document.getElementById('search-button');
@@ -69,14 +71,30 @@ async function showCurrentData() {
     weatherDesc.charAt(0).toUpperCase() + weatherDesc.slice(1);
   humidityElem.innerText = `Humidity levels at: ${humidity}%`;
   windSpeedElem.innerText = `Winds at: ${Math.round(windSpeed)} ${speedUnit}`;
-
-  console.log(currentData);
 }
 
 async function showForecastData() {
   const searchTerm = searchInput.value;
   const forecastData = await fetchWeatherForecastData(searchTerm, units);
+
+  const dt = forecastData.list.map((element) => {
+    return element.dt_txt;
+  });
+
+  let timeZoneOffset = forecastData.city.timezone / 3600;
+
+  if (timeZoneOffset > 0) timeZoneOffset = `+${timeZoneOffset}`;
+
+  const localDate = forecastData.list.map((element) => {
+    const date = DateTime.fromSeconds(element.dt, {
+      zone: `UTC${timeZoneOffset}`,
+    });
+    return date.toLocaleString(DateTime.DATETIME_MED);
+  });
+
   console.log(forecastData);
+  console.log(dt);
+  console.log(localDate);
 }
 
 searchButton.addEventListener('click', () => {
