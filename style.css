@@ -20,7 +20,8 @@ body {
 header {
   height: 80px;
   padding: 0 50px;
-  background-color: black;
+  background-color: deepskyblue;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.3);
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -40,16 +41,17 @@ main {
 #search-ctn {
   width: 400px;
   margin: 40px 0;
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 20px;
-  background-color: rgba(0, 0, 0, 0.75);
-  box-shadow: 0 0 4px black;
+  background-color: rgba(0, 0, 0, 0.8);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
   display: flex;
   justify-content: center;
 }
 
 #use-location-ctn {
   display: flex;
+  justify-content: center;
   align-items: center;
 }
 
@@ -59,6 +61,7 @@ main {
 
 #search-input-ctn {
   margin: 20px 0 10px;
+  display: flex;
 }
 
 #search-ctn label {
@@ -68,22 +71,23 @@ main {
 input[type='text'] {
   width: 150px;
   height: 30px;
+  margin-right: 5px;
   outline: none;
-  border: 1px solid black;
+  border: 1px solid darkblue;
   border-radius: 3px;
   padding: 0 5px;
   font-size: inherit;
 }
 
 input[type='button'] {
+  width: 80px;
   height: 30px;
   border: 1px solid darkblue;
   border-radius: 3px;
-  padding: 0 20px;
   background-color: darkblue;
   background-image: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.5),
+    rgba(255, 255, 255, 0.4),
     rgba(255, 255, 255, 0)
   );
   font-family: inherit;
@@ -93,11 +97,11 @@ input[type='button'] {
 
 #weather-data {
   width: 400px;
-  height: 300px;
-  border-radius: 12px;
+  min-height: 300px;
+  border-radius: 10px;
   padding: 20px;
-  background-color: rgba(0, 0, 0, 0.75);
-  box-shadow: 0 0 4px black;
+  background-color: rgba(0, 0, 0, 0.8);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
   display: flex;
   flex-direction: column;
   visibility: hidden;
@@ -119,8 +123,9 @@ input[type='button'] {
 
 #temperature-ctn {
   flex-grow: 10;
-  padding-top: 20px;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #temperature {
