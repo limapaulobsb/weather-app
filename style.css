@@ -19,7 +19,6 @@ body {
 
 header {
   height: 80px;
-  padding: 0 50px;
   background-color: deepskyblue;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.3);
   display: flex;
@@ -28,40 +27,47 @@ header {
   font-family: 'Martel', serif;
 }
 
+/* fix anchor element size problem */
 header a {
   height: 32px;
 }
 
 main {
+  margin: 0 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-#search-ctn {
-  width: 400px;
-  margin: 40px 0;
-  border-radius: 10px;
+#search-ctn,
+#weather-data {
+  width: 100%;
+  max-width: 400px;
+  margin-top: 40px;
+  border-radius: 5px;
   padding: 20px;
   background-color: rgba(0, 0, 0, 0.8);
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
   display: flex;
-  justify-content: center;
+  flex-direction: column;
 }
 
-#use-location-ctn {
-  display: flex;
-  justify-content: center;
+#search-ctn {
   align-items: center;
 }
 
-#use-location-ctn img {
+#search-ctn div:nth-child(1) {
+  display: flex;
+  align-items: center;
+}
+
+#search-ctn img {
   margin-right: 5px;
 }
 
-#search-input-ctn {
+#search-ctn div:nth-child(2) {
   margin: 20px 0 10px;
-  display: flex;
+  display: flex; /* fix alignment problem */
 }
 
 #search-ctn label {
@@ -96,32 +102,17 @@ input[type='button'] {
 }
 
 #weather-data {
-  width: 400px;
-  min-height: 300px;
-  border-radius: 10px;
-  padding: 20px;
-  background-color: rgba(0, 0, 0, 0.8);
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
-  display: flex;
-  flex-direction: column;
+  height: 360px;
   visibility: hidden;
 }
 
-#location {
-  display: flex;
-  align-items: center;
-}
-
 #city-name {
+  margin-right: 5px;
   font-family: 'Martel', serif;
   font-size: 36px;
 }
 
-#location img {
-  margin-right: 10px;
-}
-
-#temperature-ctn {
+#weather-data div:nth-child(3) {
   flex-grow: 10;
   display: flex;
   justify-content: center;
@@ -129,10 +120,14 @@ input[type='button'] {
 }
 
 #temperature {
+  margin-right: 10px;
   font-size: 72px;
 }
 
 #temp-symbol {
-  margin-left: 5px;
   font-size: 30px;
 }
+
+/* @media screen and (min-width: 1024px) {
+
+} */

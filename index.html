@@ -21,30 +21,27 @@
     <main>
       <div id="search-ctn">
         <div>
-          <div id="use-location-ctn">
-            <img src="./svg/location.svg" />
-            <span>Use my location</span>
-          </div>
-          <div id="search-input-ctn">
-            <input type="text" id="search-input" placeholder="City name..." />
-            <input type="button" id="search-button" value="Search" />
-          </div>
-          <div>
-            <input type="radio" name="units" id="celcius" checked />
-            <label for="celcius">Celcius</label>
-            <input type="radio" name="units" id="fahrenheit" />
-            <label for="fahrenheit">Fahrenheit</label>
-          </div>
+          <img src="./svg/location.svg" />
+          <span>Use my location</span>
+        </div>
+        <div>
+          <input type="text" id="search-input" placeholder="City name..." />
+          <input type="button" id="search-button" value="Search" />
+        </div>
+        <div>
+          <input type="radio" name="units" id="celcius" checked />
+          <label for="celcius">Celcius</label>
+          <input type="radio" name="units" id="fahrenheit" />
+          <label for="fahrenheit">Fahrenheit</label>
         </div>
       </div>
       <div id="weather-data">
-        <div id="location">
-          <img id="country-flag" src="" alt="Country flag" />
+        <div>
           <span id="city-name"></span>
+          <img id="country-flag" src="" alt="Country flag" />
         </div>
-        <div id="temperature-ctn">
-          <span id="temperature"></span><span id="temp-symbol"></span>
-        </div>
+        <div id="local-datetime"></div>
+        <div><span id="temperature"></span><span id="temp-symbol"></span></div>
         <span id="weather-description"></span>
         <span id="humidity"></span>
         <span id="wind-speed"></span>
