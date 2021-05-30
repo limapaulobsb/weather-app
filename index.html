@@ -19,7 +19,7 @@
       </a>
     </header>
     <main>
-      <div id="search-ctn">
+      <section id="search-ctn">
         <div>
           <img src="./svg/location.svg" />
           <span>Use my location</span>
@@ -29,23 +29,24 @@
           <input type="button" id="search-button" value="Search" />
         </div>
         <div>
-          <input type="radio" name="units" id="celcius" checked />
+          <input type="radio" id="celcius" name="units" checked />
           <label for="celcius">Celcius</label>
-          <input type="radio" name="units" id="fahrenheit" />
+          <input type="radio" id="fahrenheit" name="units" />
           <label for="fahrenheit">Fahrenheit</label>
         </div>
-      </div>
-      <div id="weather-data">
+      </section>
+      <section id="current-weather-data">
         <div>
           <span id="city-name"></span>
           <img id="country-flag" src="" alt="Country flag" />
         </div>
-        <div id="local-datetime"></div>
+        <span id="local-datetime"></span>
         <div><span id="temperature"></span><span id="temp-symbol"></span></div>
         <span id="weather-description"></span>
         <span id="humidity"></span>
         <span id="wind-speed"></span>
-      </div>
+      </section>
+      <section id="weather-forecast-data"></section>
     </main>
     <script type="module" src="script.js"></script>
   </body>

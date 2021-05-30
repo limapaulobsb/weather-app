@@ -7,21 +7,22 @@
 }
 
 body {
+  display: flex;
   min-height: 100vh;
   background-image: url('./images/rain.jpeg');
   background-size: cover;
   background-position: center;
-  display: flex;
+  background-attachment: fixed;
   flex-direction: column;
   font-family: 'Roboto', sans-serif;
   color: white;
 }
 
 header {
+  display: flex;
   height: 80px;
   background-color: deepskyblue;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.3);
-  display: flex;
   justify-content: space-around;
   align-items: center;
   font-family: 'Martel', serif;
@@ -33,22 +34,21 @@ header a {
 }
 
 main {
-  margin: 0 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
 #search-ctn,
-#weather-data {
-  width: 100%;
+#current-weather-data {
+  display: flex;
+  width: 90%;
   max-width: 400px;
   margin-top: 40px;
   border-radius: 5px;
   padding: 20px;
   background-color: rgba(0, 0, 0, 0.8);
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
-  display: flex;
   flex-direction: column;
 }
 
@@ -66,8 +66,8 @@ main {
 }
 
 #search-ctn div:nth-child(2) {
-  margin: 20px 0 10px;
   display: flex; /* fix alignment problem */
+  margin: 20px 0 10px;
 }
 
 #search-ctn label {
@@ -101,9 +101,16 @@ input[type='button'] {
   cursor: pointer;
 }
 
-#weather-data {
-  height: 360px;
+#current-weather-data {
+  display: flex;
+  height: 340px;
+  flex-direction: column;
   visibility: hidden;
+}
+
+#current-weather-data div:nth-child(1) {
+  display: flex;
+  align-items: center;
 }
 
 #city-name {
@@ -112,9 +119,13 @@ input[type='button'] {
   font-size: 36px;
 }
 
-#weather-data div:nth-child(3) {
-  flex-grow: 10;
+#current-weather-data div:nth-child(2) {
+  font-size: 14px;
+}
+
+#current-weather-data div:nth-child(3) {
   display: flex;
+  flex-grow: 10;
   justify-content: center;
   align-items: center;
 }
@@ -126,6 +137,18 @@ input[type='button'] {
 
 #temp-symbol {
   font-size: 30px;
+}
+
+#weather-forecast-data {
+  display: none;
+  width: 100vw;
+  margin-top: 40px;
+  background-color: black;
+}
+
+.forecast-single {
+  height: 40px;
+  border-bottom: 1px solid white;
 }
 
 /* @media screen and (min-width: 1024px) {
