@@ -8,23 +8,6 @@ const searchInput = document.getElementById('search-input');
 const searchButton = document.getElementById('search-button');
 let units, tempSymbol, speedUnit;
 
-window.onload = function () {
-  const forecastDataElem = document.getElementById('weather-forecast-data');
-
-  for (let index1 = 1; index1 <= FORECAST_PAGES; index1 += 1) {
-    const newPageElem = document.createElement('div');
-    newPageElem.id = `forecast-page${index1}`;
-    forecastDataElem.appendChild(newPageElem);
-    const pageElem = document.getElementById(`forecast-page${index1}`);
-
-    for (let index2 = 1; index2 <= ELEMENTS_PER_PAGE; index2 += 1) {
-      const newDataElem = document.createElement('div');
-      newDataElem.className = 'forecast-single';
-      pageElem.appendChild(newDataElem);
-    }
-  }
-};
-
 function setUnits() {
   if (document.getElementById('celcius').checked) {
     units = 'metric';
@@ -59,7 +42,7 @@ async function fetchWeatherForecastData(searchTerm, units) {
   }
 }
 
-function returnDateTime(time, offset, format) {
+function returnDateTime(time, offset) {
   let timeZoneOffset = offset / 3600;
   if (timeZoneOffset > 0) timeZoneOffset = `+${timeZoneOffset}`;
   Settings.defaultZoneName = `UTC${timeZoneOffset}`;
@@ -69,7 +52,6 @@ function returnDateTime(time, offset, format) {
   } else {
     date = DateTime.fromSeconds(time);
   }
-  if (format) return date.toLocaleString(DateTime[format]);
   return date;
 }
 
@@ -77,30 +59,30 @@ async function showCurrentData() {
   const searchTerm = searchInput.value;
   const currentData = await fetchCurrentWeatherData(searchTerm, units);
 
-  const countryCode = currentData.sys.country;
   const cityName = currentData.name;
-  const localDateTime = returnDateTime(
-    'now',
-    currentData.timezone,
-    'DATETIME_MED'
-  );
+  const countryCode = currentData.sys.country;
+  const localDateTime = returnDateTime('now', currentData.timezone);
+  const localDate = localDateTime.toLocaleString(DateTime.DATE_HUGE);
+  const localTime = localDateTime.toLocaleString(DateTime.TIME_24_SIMPLE);
   const temperature = currentData.main.temp;
   const weatherDesc = currentData.weather[0].description;
   const humidity = currentData.main.humidity;
   const windSpeed = currentData.wind.speed;
 
-  const countryFlagImg = document.getElementById('country-flag');
   const cityNameElem = document.getElementById('city-name');
-  const localDateTimeElem = document.getElementById('local-datetime');
+  const countryFlagImg = document.getElementById('country-flag');
+  const localDateElem = document.getElementById('local-date');
+  const localTimeElem = document.getElementById('local-time');
   const temperatureElem = document.getElementById('temperature');
   const tempSymbolElem = document.getElementById('temp-symbol');
   const weatherDescElem = document.getElementById('weather-description');
   const humidityElem = document.getElementById('humidity');
   const windSpeedElem = document.getElementById('wind-speed');
 
-  countryFlagImg.src = `https://www.countryflags.io/${countryCode}/shiny/24.png`;
   cityNameElem.innerText = cityName;
-  localDateTimeElem.innerText = localDateTime.toUpperCase();
+  countryFlagImg.src = `https://www.countryflags.io/${countryCode}/shiny/24.png`;
+  localDateElem.innerText = localDate;
+  localTimeElem.innerText = localTime;
   temperatureElem.innerText = Math.round(temperature);
   tempSymbolElem.innerHTML = tempSymbol;
   weatherDescElem.innerText =
@@ -109,31 +91,71 @@ async function showCurrentData() {
   windSpeedElem.innerText = `Winds at: ${Math.round(windSpeed)} ${speedUnit}`;
 
   const weatherDataElem = document.getElementById('current-weather-data');
-  weatherDataElem.style.visibility = 'visible';
+  weatherDataElem.style.display = 'flex';
+
+  console.log(currentData);
 }
 
 async function showForecastData() {
   const searchTerm = searchInput.value;
-  const forecastData = await fetchWeatherForecastData(searchTerm, units);
+  const { city, list } = await fetchWeatherForecastData(searchTerm, units);
 
-  const localDateTime = forecastData.list.map((element) =>
-    returnDateTime(element.dt, forecastData.city.timezone, 'DATETIME_FULL')
+  const forecastDateTime = list.map((element) =>
+    returnDateTime(element.dt, city.timezone)
   );
 
-  for (let i = 0; i < forecastData.list.length; i++) {
-    const dataElements = document.getElementsByClassName('forecast-single');
+  const dataElements = document.getElementsByClassName('forecast-single');
 
-    dataElements[i].innerHTML = `<p>${localDateTime[i]}`;
-    
+  for (let i = 0; i < list.length; i++) {
+    const weekday = forecastDateTime[i].weekdayShort.toUpperCase();
+    const day = forecastDateTime[i].day;
+    const time = forecastDateTime[i].toLocaleString(DateTime.TIME_24_SIMPLE);
+    const humidity = list[i].main.humidity;
+    const windSpeed = Math.round(list[i].wind.speed);
+    const temperature = Math.round(list[i].main.temp);
+    const imgURL = `http://openweathermap.org/img/wn/${list[i].weather[0].icon}@2x.png`;
+
+    dataElements[i].innerHTML = `
+      <div>
+        <div class="forecast-date mr-med">
+          <span class="fs-small">${weekday}</span>
+          <span>${day}</span>
+        </div>
+        <span class="fs-small">${time}</span>
+      </div>
+      <span class="fs-small">H: ${humidity}% W: ${windSpeed} ${speedUnit}</span>
+      <div>
+        <span class="mr-small">${temperature} ${tempSymbol}</span>
+        <img src="${imgURL}" />
+      </div>
+    `;
+
     if (i === FORECAST_PAGES * ELEMENTS_PER_PAGE - 1) break;
   }
 
   const forecastDataElem = document.getElementById('weather-forecast-data');
-  forecastDataElem.style.display = 'initial';
+  forecastDataElem.style.display = 'flex';
 
-  console.log(forecastData);
-  console.log(localDateTime);
+  console.log(list);
+  console.log(forecastDateTime);
 }
+
+window.onload = function () {
+  const forecastDataElem = document.getElementById('weather-forecast-data');
+
+  for (let index1 = 1; index1 <= FORECAST_PAGES; index1 += 1) {
+    const newPageElem = document.createElement('div');
+    newPageElem.id = `forecast-page${index1}`;
+    forecastDataElem.appendChild(newPageElem);
+    const pageElem = document.getElementById(`forecast-page${index1}`);
+
+    for (let index2 = 1; index2 <= ELEMENTS_PER_PAGE; index2 += 1) {
+      const newDataElem = document.createElement('div');
+      newDataElem.className = 'forecast-single';
+      pageElem.appendChild(newDataElem);
+    }
+  }
+};
 
 searchInput.addEventListener('keyup', (event) => {
   if (event.key === 'Enter') {

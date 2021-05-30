@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Martel&family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP&family=Roboto&display=swap');
 
 * {
   box-sizing: border-box;
@@ -6,26 +6,32 @@
   padding: 0;
 }
 
-body {
+body,
+header,
+main,
+section,
+div {
   display: flex;
+}
+
+body {
   min-height: 100vh;
   background-image: url('./images/rain.jpeg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
   flex-direction: column;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Noto Sans JP', sans-serif;
   color: white;
 }
 
 header {
-  display: flex;
   height: 80px;
-  background-color: deepskyblue;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.3);
+  background-color: rgb(0, 120, 210);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
   justify-content: space-around;
   align-items: center;
-  font-family: 'Martel', serif;
+  font-family: 'Roboto', sans-serif;
 }
 
 /* fix anchor element size problem */
@@ -33,122 +39,137 @@ header a {
   height: 32px;
 }
 
-main {
-  display: flex;
+main,
+#search-ctn {
   flex-direction: column;
   align-items: center;
 }
 
 #search-ctn,
 #current-weather-data {
-  display: flex;
-  width: 90%;
+  width: 96vw;
   max-width: 400px;
   margin-top: 40px;
-  border-radius: 5px;
+  border-radius: 10px;
   padding: 20px;
   background-color: rgba(0, 0, 0, 0.8);
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
-  flex-direction: column;
 }
 
-#search-ctn {
+#search-ctn > div {
   align-items: center;
 }
 
-#search-ctn div:nth-child(1) {
-  display: flex;
-  align-items: center;
-}
-
-#search-ctn img {
-  margin-right: 5px;
-}
-
-#search-ctn div:nth-child(2) {
-  display: flex; /* fix alignment problem */
+#search-ctn > div:nth-child(2) {
   margin: 20px 0 10px;
 }
 
-#search-ctn label {
-  margin-right: 10px;
-}
-
 input[type='text'] {
-  width: 150px;
+  width: 180px;
   height: 30px;
-  margin-right: 5px;
   outline: none;
-  border: 1px solid darkblue;
-  border-radius: 3px;
+  border: 1px solid rgb(0, 120, 210);
+  border-right: none;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
   padding: 0 5px;
-  font-size: inherit;
+  font-family: inherit;
 }
 
 input[type='button'] {
   width: 80px;
   height: 30px;
-  border: 1px solid darkblue;
-  border-radius: 3px;
-  background-color: darkblue;
+  border: 1px solid rgb(0, 120, 210);
+  border-left: none;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  background-color: rgb(0, 120, 210);
   background-image: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.4),
+    90deg,
+    rgba(255, 255, 255, 0.75),
     rgba(255, 255, 255, 0)
   );
   font-family: inherit;
+  font-weight: bold;
   color: inherit;
-  cursor: pointer;
 }
 
 #current-weather-data {
-  display: flex;
-  height: 340px;
+  display: none;
   flex-direction: column;
-  visibility: hidden;
 }
 
-#current-weather-data div:nth-child(1) {
-  display: flex;
+#current-weather-data > div:first-of-type {
   align-items: center;
 }
 
 #city-name {
-  margin-right: 5px;
-  font-family: 'Martel', serif;
-  font-size: 36px;
+  font-family: 'Roboto', sans-serif;
 }
 
-#current-weather-data div:nth-child(2) {
-  font-size: 14px;
+#country-flag {
+  width: 24px;
+  height: 24px;
 }
 
-#current-weather-data div:nth-child(3) {
-  display: flex;
-  flex-grow: 10;
+#current-weather-data > div:nth-of-type(2) {
+  margin-bottom: 20px;
   justify-content: center;
   align-items: center;
 }
 
-#temperature {
-  margin-right: 10px;
-  font-size: 72px;
-}
-
-#temp-symbol {
-  font-size: 30px;
-}
-
 #weather-forecast-data {
   display: none;
-  width: 100vw;
   margin-top: 40px;
-  background-color: black;
+  background-color: rgba(0, 120, 210, 0.9);
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.25);
+  flex-direction: column;
+}
+
+[id^='forecast-page'] {
+  width: 100vw;
+  flex-direction: column;
+  align-items: center;
 }
 
 .forecast-single {
+  width: 92vw;
+  height: 50px;
+  border-bottom: 1px solid lightblue;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+}
+
+.forecast-single > div {
+  align-items: center;
+}
+
+.forecast-date {
+  width: 30px;
+  flex-direction: column;
+  align-items: center;
+}
+
+.forecast-single img {
+  width: 40px;
   height: 40px;
-  border-bottom: 1px solid white;
+}
+
+.mr-small {
+  margin-right: 5px;
+}
+.mr-med {
+  margin-right: 15px;
+}
+.fs-small {
+  font-size: 12px;
+}
+.fs-large {
+  font-size: 36px;
+}
+.fs-larger {
+  font-size: 72px;
 }
 
 /* @media screen and (min-width: 1024px) {
