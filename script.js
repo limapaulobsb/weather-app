@@ -1,12 +1,15 @@
 import { Settings, DateTime } from './lib/luxon.min.js';
 
+let units, tempSymbol, speedUnit;
+const API_KEY = 'd3d6d3e42626a9197b7d1fd4072ddd88';
 const FORECAST_PAGES = 5;
 const ELEMENTS_PER_PAGE = 8;
-const API_KEY = 'd3d6d3e42626a9197b7d1fd4072ddd88';
 
 const searchInput = document.getElementById('search-input');
 const searchButton = document.getElementById('search-button');
-let units, tempSymbol, speedUnit;
+const forecastDataElem = document.getElementById('weather-forecast-data');
+const forecastHeaderElem = document.getElementById('forecast-header');
+let headerIsHidden = true;
 
 function setUnits() {
   if (document.getElementById('celcius').checked) {
@@ -58,21 +61,21 @@ function returnDateTime(time, offset) {
 async function showCurrentData() {
   const searchTerm = searchInput.value;
   const currentData = await fetchCurrentWeatherData(searchTerm, units);
+  const localDateTime = returnDateTime('now', currentData.timezone);
 
   const cityName = currentData.name;
-  const countryCode = currentData.sys.country;
-  const localDateTime = returnDateTime('now', currentData.timezone);
-  const localDate = localDateTime.toLocaleString(DateTime.DATE_HUGE);
-  const localTime = localDateTime.toLocaleString(DateTime.TIME_24_SIMPLE);
+  const imgURL = `https://www.countryflags.io/${currentData.sys.country}/shiny/24.png`;
+  const date = localDateTime.toLocaleString(DateTime.DATE_HUGE);
+  const time = localDateTime.toLocaleString(DateTime.TIME_24_SIMPLE);
   const temperature = currentData.main.temp;
   const weatherDesc = currentData.weather[0].description;
   const humidity = currentData.main.humidity;
   const windSpeed = currentData.wind.speed;
 
   const cityNameElem = document.getElementById('city-name');
-  const countryFlagImg = document.getElementById('country-flag');
-  const localDateElem = document.getElementById('local-date');
-  const localTimeElem = document.getElementById('local-time');
+  const countryFlagImg = document.getElementsByClassName('country-flag');
+  const dateElem = document.getElementById('local-date');
+  const timeElem = document.getElementById('local-time');
   const temperatureElem = document.getElementById('temperature');
   const tempSymbolElem = document.getElementById('temp-symbol');
   const weatherDescElem = document.getElementById('weather-description');
@@ -80,15 +83,20 @@ async function showCurrentData() {
   const windSpeedElem = document.getElementById('wind-speed');
 
   cityNameElem.innerText = cityName;
-  countryFlagImg.src = `https://www.countryflags.io/${countryCode}/shiny/24.png`;
-  localDateElem.innerText = localDate;
-  localTimeElem.innerText = localTime;
+  countryFlagImg[0].src = imgURL;
+  dateElem.innerText = date;
+  timeElem.innerText = time;
   temperatureElem.innerText = Math.round(temperature);
   tempSymbolElem.innerHTML = tempSymbol;
   weatherDescElem.innerText =
     weatherDesc.charAt(0).toUpperCase() + weatherDesc.slice(1);
   humidityElem.innerText = `Humidity levels at: ${humidity}%`;
   windSpeedElem.innerText = `Winds at: ${Math.round(windSpeed)} ${speedUnit}`;
+
+  forecastHeaderElem.innerHTML = `
+    <span class="mr-small fs-med">${cityName}</span>
+    <img class="country-flag" src="${imgURL}" />
+  `;
 
   const weatherDataElem = document.getElementById('current-weather-data');
   weatherDataElem.style.display = 'flex';
@@ -118,12 +126,12 @@ async function showForecastData() {
     dataElements[i].innerHTML = `
       <div>
         <div class="forecast-date mr-med">
-          <span class="fs-small">${weekday}</span>
+          <span class="fs-smaller">${weekday}</span>
           <span>${day}</span>
         </div>
-        <span class="fs-small">${time}</span>
+        <span class="fs-smaller">${time}</span>
       </div>
-      <span class="fs-small">H: ${humidity}% W: ${windSpeed} ${speedUnit}</span>
+      <span class="fs-smaller">H: ${humidity}% W: ${windSpeed} ${speedUnit}</span>
       <div>
         <span class="mr-small">${temperature} ${tempSymbol}</span>
         <img src="${imgURL}" />
@@ -133,7 +141,6 @@ async function showForecastData() {
     if (i === FORECAST_PAGES * ELEMENTS_PER_PAGE - 1) break;
   }
 
-  const forecastDataElem = document.getElementById('weather-forecast-data');
   forecastDataElem.style.display = 'flex';
 
   console.log(list);
@@ -141,8 +148,6 @@ async function showForecastData() {
 }
 
 window.onload = function () {
-  const forecastDataElem = document.getElementById('weather-forecast-data');
-
   for (let index1 = 1; index1 <= FORECAST_PAGES; index1 += 1) {
     const newPageElem = document.createElement('div');
     newPageElem.id = `forecast-page${index1}`;
@@ -156,6 +161,21 @@ window.onload = function () {
     }
   }
 };
+
+document.addEventListener('scroll', function () {
+  const offset = forecastDataElem.offsetTop - 60;
+
+  if (window.pageYOffset >= offset && headerIsHidden) {
+    headerIsHidden = false;
+    forecastHeaderElem.style.top = 0;
+  } else if (
+    window.pageYOffset < offset &&
+    !headerIsHidden
+  ) {
+    headerIsHidden = true;
+    forecastHeaderElem.style.top = '-60px';
+  }
+});
 
 searchInput.addEventListener('keyup', (event) => {
   if (event.key === 'Enter') {
