@@ -9,20 +9,14 @@
   </head>
   <body>
     <header>
-      <div><h1>Weather App</h1></div>
-      <a
-        href="https://github.com/limapaulobsb/weather-app"
-        target="_blank"
-        rel="noreferrer"
-      >
-        <img src="./images/github.png" alt="GitHub" />
-      </a>
+      <h1>Weather App</h1>
+      <img id="github-logo" src="./images/github.png" alt="GitHub link" />
     </header>
     <main>
       <section id="search-ctn">
         <div>
-          <img class="mr-small" src="./svg/location.svg" />
-          <span>Use my location</span>
+          <img class="mr-small" src="./svg/location.svg" alt="" />
+          <p>Use my location</p>
         </div>
         <div>
           <input type="text" id="search-input" placeholder="City name..." />
@@ -41,24 +35,34 @@
           <label for="fahrenheit">Fahrenheit</label>
         </div>
       </section>
-      <section id="current-weather-data">
+      <section id="current-data">
         <div>
-          <span class="mr-small fs-large" id="city-name"></span>
-          <img class="country-flag" alt="Country flag" />
+          <span class="city-name mr-med fs-large"></span>
+          <img class="country-flag" alt="Country flag icon" />
         </div>
-        <span id="local-date"></span>
-        <span id="local-time"></span>
+        <div>
+          <span id="date"></span>
+          <span id="time"></span>
+        </div>
         <div>
           <span class="mr-med fs-larger" id="temperature"></span>
           <span class="fs-large" id="temp-symbol"></span>
         </div>
-        <span id="weather-description"></span>
-        <span id="humidity"></span>
-        <span id="wind-speed"></span>
+        <div>
+          <span id="weather-description"></span>
+          <span id="humidity"></span>
+          <span id="wind-speed"></span>
+        </div>
       </section>
-      <div id="forecast-header"></div>
-      <section id="weather-forecast-data"></section>
+      <header>
+        <span class="city-name mr-small fs-med"></span>
+        <img class="country-flag" alt="Country flag icon" />
+      </header>
+      <section id="forecast-data"></section>
     </main>
+    <div id="scroll-button">
+      <img src="./svg/scroll-back.svg" alt="Scroll back button" />
+    </div>
     <script type="module" src="script.js"></script>
   </body>
 </html>

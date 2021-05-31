@@ -1,15 +1,33 @@
 import { Settings, DateTime } from './lib/luxon.min.js';
 
-let units, tempSymbol, speedUnit;
-const API_KEY = 'd3d6d3e42626a9197b7d1fd4072ddd88';
 const FORECAST_PAGES = 5;
 const ELEMENTS_PER_PAGE = 8;
+const FORECAST_HEADER_HEIGHT = 60;
+const FORECAST_HEADER_OFFSET = -100;
+const API_KEY = 'd3d6d3e42626a9197b7d1fd4072ddd88';
 
+const forecastDataSection = document.getElementById('forecast-data');
 const searchInput = document.getElementById('search-input');
 const searchButton = document.getElementById('search-button');
-const forecastDataElem = document.getElementById('weather-forecast-data');
-const forecastHeaderElem = document.getElementById('forecast-header');
-let headerIsHidden = true;
+const forecastHeader = document.querySelector('section + header');
+const scrollButton = document.getElementById('scroll-button');
+let areHidden = true;
+let units, tempSymbol, speedUnit;
+
+function createForecastPages() {
+  for (let index1 = 1; index1 <= FORECAST_PAGES; index1 += 1) {
+    const newPageElem = document.createElement('div');
+    newPageElem.id = `forecast-page${index1}`;
+    forecastDataSection.appendChild(newPageElem);
+    const pageElem = document.getElementById(`forecast-page${index1}`);
+
+    for (let index2 = 1; index2 <= ELEMENTS_PER_PAGE; index2 += 1) {
+      const newDataElem = document.createElement('div');
+      newDataElem.className = 'forecast-single';
+      pageElem.appendChild(newDataElem);
+    }
+  }
+}
 
 function setUnits() {
   if (document.getElementById('celcius').checked) {
@@ -23,7 +41,7 @@ function setUnits() {
   }
 }
 
-async function fetchCurrentWeatherData(searchTerm, units) {
+async function fetchCurrentData(searchTerm, units) {
   try {
     const response = await fetch(
       `https://api.openweathermap.org/data/2.5/weather?appid=${API_KEY}&units=${units}&q=${searchTerm}`
@@ -34,7 +52,7 @@ async function fetchCurrentWeatherData(searchTerm, units) {
   }
 }
 
-async function fetchWeatherForecastData(searchTerm, units) {
+async function fetchForecastData(searchTerm, units) {
   try {
     const response = await fetch(
       `https://api.openweathermap.org/data/2.5/forecast?appid=${API_KEY}&units=${units}&q=${searchTerm}`
@@ -45,23 +63,14 @@ async function fetchWeatherForecastData(searchTerm, units) {
   }
 }
 
-function returnDateTime(time, offset) {
+function setTimezone(offset) {
   let timeZoneOffset = offset / 3600;
   if (timeZoneOffset > 0) timeZoneOffset = `+${timeZoneOffset}`;
   Settings.defaultZoneName = `UTC${timeZoneOffset}`;
-  let date;
-  if (isNaN(time)) {
-    date = DateTime.now();
-  } else {
-    date = DateTime.fromSeconds(time);
-  }
-  return date;
 }
 
-async function showCurrentData() {
-  const searchTerm = searchInput.value;
-  const currentData = await fetchCurrentWeatherData(searchTerm, units);
-  const localDateTime = returnDateTime('now', currentData.timezone);
+function showCurrentData(currentData) {
+  const localDateTime = DateTime.now();
 
   const cityName = currentData.name;
   const imgURL = `https://www.countryflags.io/${currentData.sys.country}/shiny/24.png`;
@@ -72,18 +81,22 @@ async function showCurrentData() {
   const humidity = currentData.main.humidity;
   const windSpeed = currentData.wind.speed;
 
-  const cityNameElem = document.getElementById('city-name');
-  const countryFlagImg = document.getElementsByClassName('country-flag');
-  const dateElem = document.getElementById('local-date');
-  const timeElem = document.getElementById('local-time');
+  const cityNameElems = document.getElementsByClassName('city-name');
+  const countryFlagImgs = document.getElementsByClassName('country-flag');
+
+  const dateElem = document.getElementById('date');
+  const timeElem = document.getElementById('time');
   const temperatureElem = document.getElementById('temperature');
   const tempSymbolElem = document.getElementById('temp-symbol');
   const weatherDescElem = document.getElementById('weather-description');
   const humidityElem = document.getElementById('humidity');
   const windSpeedElem = document.getElementById('wind-speed');
 
-  cityNameElem.innerText = cityName;
-  countryFlagImg[0].src = imgURL;
+  cityNameElems[0].innerText = cityName;
+  cityNameElems[1].innerText = cityName;
+  countryFlagImgs[0].src = imgURL;
+  countryFlagImgs[1].src = imgURL;
+
   dateElem.innerText = date;
   timeElem.innerText = time;
   temperatureElem.innerText = Math.round(temperature);
@@ -93,31 +106,18 @@ async function showCurrentData() {
   humidityElem.innerText = `Humidity levels at: ${humidity}%`;
   windSpeedElem.innerText = `Winds at: ${Math.round(windSpeed)} ${speedUnit}`;
 
-  forecastHeaderElem.innerHTML = `
-    <span class="mr-small fs-med">${cityName}</span>
-    <img class="country-flag" src="${imgURL}" />
-  `;
-
-  const weatherDataElem = document.getElementById('current-weather-data');
+  const weatherDataElem = document.getElementById('current-data');
   weatherDataElem.style.display = 'flex';
-
-  console.log(currentData);
 }
 
-async function showForecastData() {
-  const searchTerm = searchInput.value;
-  const { city, list } = await fetchWeatherForecastData(searchTerm, units);
-
-  const forecastDateTime = list.map((element) =>
-    returnDateTime(element.dt, city.timezone)
-  );
-
+function showForecastData({ list }) {
+  const localtDateTime = list.map((e) => DateTime.fromSeconds(e.dt));
   const dataElements = document.getElementsByClassName('forecast-single');
 
   for (let i = 0; i < list.length; i++) {
-    const weekday = forecastDateTime[i].weekdayShort.toUpperCase();
-    const day = forecastDateTime[i].day;
-    const time = forecastDateTime[i].toLocaleString(DateTime.TIME_24_SIMPLE);
+    const weekday = localtDateTime[i].weekdayShort.toUpperCase();
+    const day = localtDateTime[i].day;
+    const time = localtDateTime[i].toLocaleString(DateTime.TIME_24_SIMPLE);
     const humidity = list[i].main.humidity;
     const windSpeed = Math.round(list[i].wind.speed);
     const temperature = Math.round(list[i].main.temp);
@@ -129,9 +129,13 @@ async function showForecastData() {
           <span class="fs-smaller">${weekday}</span>
           <span>${day}</span>
         </div>
-        <span class="fs-smaller">${time}</span>
+        <div>
+          <span class="fs-smaller">${time}</span>
+        </div>
       </div>
-      <span class="fs-smaller">H: ${humidity}% W: ${windSpeed} ${speedUnit}</span>
+      <div>
+        <span class="fs-smaller">H: ${humidity}% W: ${windSpeed} ${speedUnit}</span>
+      </div>
       <div>
         <span class="mr-small">${temperature} ${tempSymbol}</span>
         <img src="${imgURL}" />
@@ -141,52 +145,59 @@ async function showForecastData() {
     if (i === FORECAST_PAGES * ELEMENTS_PER_PAGE - 1) break;
   }
 
-  forecastDataElem.style.display = 'flex';
-
-  console.log(list);
-  console.log(forecastDateTime);
+  forecastDataSection.style.display = 'flex';
 }
 
-window.onload = function () {
-  for (let index1 = 1; index1 <= FORECAST_PAGES; index1 += 1) {
-    const newPageElem = document.createElement('div');
-    newPageElem.id = `forecast-page${index1}`;
-    forecastDataElem.appendChild(newPageElem);
-    const pageElem = document.getElementById(`forecast-page${index1}`);
+async function loadWeatherData() {
+  setUnits();
+  const searchTerm = searchInput.value;
 
-    for (let index2 = 1; index2 <= ELEMENTS_PER_PAGE; index2 += 1) {
-      const newDataElem = document.createElement('div');
-      newDataElem.className = 'forecast-single';
-      pageElem.appendChild(newDataElem);
-    }
-  }
+  const data = [
+    fetchCurrentData(searchTerm, units),
+    fetchForecastData(searchTerm, units),
+  ];
+  const result = await Promise.all(data);
+
+  setTimezone(result[0].timezone);
+  showCurrentData(result[0]);
+  showForecastData(result[1]);
+}
+
+const toggleHelpers = {
+  show: function () {
+    forecastHeader.style.top = 0;
+    scrollButton.style.bottom = '10px';
+    areHidden = false;
+  },
+  hide: function () {
+    forecastHeader.style.top = `${FORECAST_HEADER_OFFSET}px`;
+    scrollButton.style.bottom = `${FORECAST_HEADER_OFFSET + 10}px`;
+    areHidden = true;
+  },
 };
 
-document.addEventListener('scroll', function () {
-  const offset = forecastDataElem.offsetTop - 60;
-
-  if (window.pageYOffset >= offset && headerIsHidden) {
-    headerIsHidden = false;
-    forecastHeaderElem.style.top = 0;
-  } else if (
-    window.pageYOffset < offset &&
-    !headerIsHidden
-  ) {
-    headerIsHidden = true;
-    forecastHeaderElem.style.top = '-60px';
-  }
+window.addEventListener('load', () => {
+  createForecastPages();
 });
 
-searchInput.addEventListener('keyup', (event) => {
-  if (event.key === 'Enter') {
-    setUnits();
-    showCurrentData();
-    showForecastData();
+searchInput.addEventListener('keyup', (e) => {
+  if (e.key === 'Enter') {
+    loadWeatherData();
   }
 });
 
 searchButton.addEventListener('click', () => {
-  setUnits();
-  showCurrentData();
-  showForecastData();
+  loadWeatherData();
 });
+
+document.addEventListener('scroll', () => {
+  const targetOffset = forecastDataSection.offsetTop - FORECAST_HEADER_HEIGHT;
+
+  if (window.pageYOffset >= targetOffset && areHidden) {
+    toggleHelpers.show();
+  } else if (window.pageYOffset < targetOffset && !areHidden) {
+    toggleHelpers.hide();
+  }
+});
+
+scrollButton.addEventListener('click', () => window.scroll(0, 0));
