@@ -2,42 +2,51 @@ import { Settings, DateTime } from './lib/luxon.min.js';
 
 const FORECAST_PAGES = 5;
 const ELEMENTS_PER_PAGE = 8;
-const FORECAST_HEADER_HEIGHT = 60;
-const FORECAST_HEADER_OFFSET = -100;
 const API_KEY = 'd3d6d3e42626a9197b7d1fd4072ddd88';
 
-const forecastDataSection = document.getElementById('forecast-data');
 const searchInput = document.getElementById('search-input');
 const searchButton = document.getElementById('search-button');
+const messageElem = document.querySelector('#message-container > p');
 const forecastHeader = document.querySelector('section + header');
+const forecastDataSection = document.getElementById('forecast-data');
 const scrollButton = document.getElementById('scroll-button');
 let areHidden = true;
-let units, tempSymbol, speedUnit;
+let units, tempSymbol, speedUnit, mult;
 
 function createForecastPages() {
   for (let index1 = 1; index1 <= FORECAST_PAGES; index1 += 1) {
-    const newPageElem = document.createElement('div');
-    newPageElem.id = `forecast-page${index1}`;
+    const newPageElem = document.createElement('ul');
+    newPageElem.id = `forecast-page-${index1}`;
     forecastDataSection.appendChild(newPageElem);
-    const pageElem = document.getElementById(`forecast-page${index1}`);
+    const pageElem = document.getElementById(`forecast-page-${index1}`);
 
     for (let index2 = 1; index2 <= ELEMENTS_PER_PAGE; index2 += 1) {
-      const newDataElem = document.createElement('div');
-      newDataElem.className = 'forecast-single';
+      const newDataElem = document.createElement('li');
       pageElem.appendChild(newDataElem);
     }
   }
 }
 
+const message = {
+  show: (message) => {
+    messageElem.innerText = message;
+  },
+  hide: () => {
+    messageElem.innerText = '';
+  },
+};
+
 function setUnits() {
   if (document.getElementById('celcius').checked) {
     units = 'metric';
     tempSymbol = '&deg;C';
-    speedUnit = 'm/s';
+    speedUnit = 'km/h';
+    mult = 3.6;
   } else {
     units = 'imperial';
     tempSymbol = '&deg;F';
     speedUnit = 'mph';
+    mult = 1;
   }
 }
 
@@ -63,67 +72,52 @@ async function fetchForecastData(searchTerm, units) {
   }
 }
 
-function setTimezone(offset) {
-  let timeZoneOffset = offset / 3600;
-  if (timeZoneOffset > 0) timeZoneOffset = `+${timeZoneOffset}`;
-  Settings.defaultZoneName = `UTC${timeZoneOffset}`;
-}
-
-function showCurrentData(currentData) {
+function showCurrentData({ main, name, sys, weather, wind }) {
   const localDateTime = DateTime.now();
-
-  const cityName = currentData.name;
-  const imgURL = `https://www.countryflags.io/${currentData.sys.country}/shiny/24.png`;
+  const imgURL = `https://www.countryflags.io/${sys.country}/shiny/24.png`;
   const date = localDateTime.toLocaleString(DateTime.DATE_HUGE);
   const time = localDateTime.toLocaleString(DateTime.TIME_24_SIMPLE);
-  const temperature = currentData.main.temp;
-  const weatherDesc = currentData.weather[0].description;
-  const humidity = currentData.main.humidity;
-  const windSpeed = currentData.wind.speed;
+  const temperature = Math.round(main.temp);
+  const minTemp = `${Math.round(main.temp_min)} ${tempSymbol}`;
+  const maxTemp = `${Math.round(main.temp_max)} ${tempSymbol}`;
+  const descText =
+    weather[0].description.charAt(0).toUpperCase() + weather[0].description.slice(1);
+  const humidityText = `Humidity levels at: ${main.humidity}%`;
+  const windSpeedText = `Winds at: ${Math.round(wind.speed * mult)} ${speedUnit}`;
 
   const cityNameElems = document.getElementsByClassName('city-name');
+  cityNameElems[0].innerText = name;
+  cityNameElems[1].innerText = name;
   const countryFlagImgs = document.getElementsByClassName('country-flag');
-
-  const dateElem = document.getElementById('date');
-  const timeElem = document.getElementById('time');
-  const temperatureElem = document.getElementById('temperature');
-  const tempSymbolElem = document.getElementById('temp-symbol');
-  const weatherDescElem = document.getElementById('weather-description');
-  const humidityElem = document.getElementById('humidity');
-  const windSpeedElem = document.getElementById('wind-speed');
-
-  cityNameElems[0].innerText = cityName;
-  cityNameElems[1].innerText = cityName;
   countryFlagImgs[0].src = imgURL;
   countryFlagImgs[1].src = imgURL;
-
-  dateElem.innerText = date;
-  timeElem.innerText = time;
-  temperatureElem.innerText = Math.round(temperature);
-  tempSymbolElem.innerHTML = tempSymbol;
-  weatherDescElem.innerText =
-    weatherDesc.charAt(0).toUpperCase() + weatherDesc.slice(1);
-  humidityElem.innerText = `Humidity levels at: ${humidity}%`;
-  windSpeedElem.innerText = `Winds at: ${Math.round(windSpeed)} ${speedUnit}`;
+  document.getElementById('date').innerText = date;
+  document.getElementById('time').innerText = time;
+  document.getElementById('temperature').innerText = temperature;
+  document.getElementById('min-temp').innerHTML = minTemp;
+  document.getElementById('max-temp').innerHTML = maxTemp;
+  document.getElementById('temp-symbol').innerHTML = tempSymbol;
+  document.getElementById('weather-description').innerText = descText;
+  document.getElementById('humidity').innerText = humidityText;
+  document.getElementById('wind-speed').innerText = windSpeedText;
 
   const weatherDataElem = document.getElementById('current-data');
   weatherDataElem.style.display = 'flex';
 }
 
 function showForecastData({ list }) {
-  const localtDateTime = list.map((e) => DateTime.fromSeconds(e.dt));
-  const dataElements = document.getElementsByClassName('forecast-single');
+  const localDateTime = list.map((obj) => DateTime.fromSeconds(obj.dt));
+  const dataElems = document.getElementsByTagName('li');
 
   for (let i = 0; i < list.length; i++) {
-    const weekday = localtDateTime[i].weekdayShort.toUpperCase();
-    const day = localtDateTime[i].day;
-    const time = localtDateTime[i].toLocaleString(DateTime.TIME_24_SIMPLE);
+    const weekday = localDateTime[i].weekdayShort.toUpperCase();
+    const day = localDateTime[i].day;
+    const time = localDateTime[i].toLocaleString(DateTime.TIME_24_SIMPLE);
     const humidity = list[i].main.humidity;
-    const windSpeed = Math.round(list[i].wind.speed);
+    const windSpeed = Math.round(list[i].wind.speed * mult);
     const temperature = Math.round(list[i].main.temp);
-    const imgURL = `http://openweathermap.org/img/wn/${list[i].weather[0].icon}@2x.png`;
 
-    dataElements[i].innerHTML = `
+    dataElems[i].innerHTML = `
       <div>
         <div class="forecast-date mr-med">
           <span class="fs-smaller">${weekday}</span>
@@ -134,11 +128,11 @@ function showForecastData({ list }) {
         </div>
       </div>
       <div>
-        <span class="fs-smaller">H: ${humidity}% W: ${windSpeed} ${speedUnit}</span>
+        <span class="fs-smaaller">H: ${humidity}% W: ${windSpeed} ${speedUnit}</span>
       </div>
       <div>
-        <span class="mr-small">${temperature} ${tempSymbol}</span>
-        <img src="${imgURL}" />
+        <span class="mr-med">${temperature} ${tempSymbol}</span>
+        <img class="icon" src="./svg/sun.svg" alt="">
       </div>
     `;
 
@@ -149,34 +143,40 @@ function showForecastData({ list }) {
 }
 
 async function loadWeatherData() {
+  message.show('loading...');
   setUnits();
   const searchTerm = searchInput.value;
-
   const data = [
     fetchCurrentData(searchTerm, units),
     fetchForecastData(searchTerm, units),
   ];
   const result = await Promise.all(data);
 
-  setTimezone(result[0].timezone);
+  // console.log(result);
+
+  let timeZoneOffset = result[0].timezone / 3600;
+  if (timeZoneOffset > 0) timeZoneOffset = `+${timeZoneOffset}`;
+  Settings.defaultZoneName = `UTC${timeZoneOffset}`;
   showCurrentData(result[0]);
   showForecastData(result[1]);
+  message.hide();
 }
 
-const toggleHelpers = {
-  show: function () {
+const helpers = {
+  show: () => {
     forecastHeader.style.top = 0;
     scrollButton.style.bottom = '10px';
     areHidden = false;
   },
-  hide: function () {
-    forecastHeader.style.top = `${FORECAST_HEADER_OFFSET}px`;
-    scrollButton.style.bottom = `${FORECAST_HEADER_OFFSET + 10}px`;
+  hide: () => {
+    forecastHeader.style.top = '-100px';
+    scrollButton.style.bottom = '-90px';
     areHidden = true;
   },
 };
 
 window.addEventListener('load', () => {
+  Settings.defaultLocale = 'en-US';
   createForecastPages();
 });
 
@@ -191,12 +191,13 @@ searchButton.addEventListener('click', () => {
 });
 
 document.addEventListener('scroll', () => {
+  const FORECAST_HEADER_HEIGHT = 80;
   const targetOffset = forecastDataSection.offsetTop - FORECAST_HEADER_HEIGHT;
 
   if (window.pageYOffset >= targetOffset && areHidden) {
-    toggleHelpers.show();
+    helpers.show();
   } else if (window.pageYOffset < targetOffset && !areHidden) {
-    toggleHelpers.hide();
+    helpers.hide();
   }
 });
 
