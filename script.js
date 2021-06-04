@@ -1,28 +1,26 @@
 import { Settings, DateTime } from './lib/luxon.min.js';
 
-const FORECAST_PAGES = 5;
-const ELEMENTS_PER_PAGE = 8;
 const API_KEY = 'd3d6d3e42626a9197b7d1fd4072ddd88';
-
+const ELEMENTS_PER_PAGE = 8;
+const pageElems = document.getElementsByTagName('ul');
+const pagesNumber = pageElems.length;
 const searchInput = document.getElementById('search-input');
 const searchButton = document.getElementById('search-button');
 const messageElem = document.querySelector('#message-container > p');
 const forecastHeader = document.querySelector('section + header');
-const forecastDataSection = document.getElementById('forecast-data');
-const scrollButton = document.getElementById('scroll-button');
+const scrollBackButton = document.getElementById('scroll-back');
+const forecastDataContainer = document.querySelector('#forecast-data > div:first-child');
+const scrollUpButton = document.getElementById('scroll-up');
+const scrollDownButton = document.getElementById('scroll-down');
+
 let areHidden = true;
 let units, tempSymbol, speedUnit, mult;
 
-function createForecastPages() {
-  for (let index1 = 1; index1 <= FORECAST_PAGES; index1 += 1) {
-    const newPageElem = document.createElement('ul');
-    newPageElem.id = `forecast-page-${index1}`;
-    forecastDataSection.appendChild(newPageElem);
-    const pageElem = document.getElementById(`forecast-page-${index1}`);
-
-    for (let index2 = 1; index2 <= ELEMENTS_PER_PAGE; index2 += 1) {
+function createForecastSingles() {
+  for (const element of pageElems) {
+    for (let i = 1; i <= ELEMENTS_PER_PAGE; i++) {
       const newDataElem = document.createElement('li');
-      pageElem.appendChild(newDataElem);
+      element.appendChild(newDataElem);
     }
   }
 }
@@ -154,9 +152,10 @@ function showForecastData({ city, list }) {
       </div>
     `;
 
-    if (i === FORECAST_PAGES * ELEMENTS_PER_PAGE - 1) break;
+    if (i === pagesNumber * ELEMENTS_PER_PAGE - 1) break;
   }
 
+  const forecastDataSection = document.getElementById('forecast-data');
   forecastDataSection.style.display = 'flex';
 }
 
@@ -185,19 +184,19 @@ async function loadWeatherData(searchTerm) {
 const helpers = {
   show: () => {
     forecastHeader.style.top = 0;
-    scrollButton.style.bottom = '10px';
+    scrollBackButton.style.bottom = '10px';
     areHidden = false;
   },
   hide: () => {
     forecastHeader.style.top = '-100px';
-    scrollButton.style.bottom = '-90px';
+    scrollBackButton.style.bottom = '-90px';
     areHidden = true;
   },
 };
 
 window.addEventListener('load', () => {
   Settings.defaultLocale = 'en-US';
-  createForecastPages();
+  createForecastSingles();
 });
 
 searchInput.addEventListener('keyup', (event) => {
@@ -212,7 +211,7 @@ searchButton.addEventListener('click', () => {
 
 document.addEventListener('scroll', () => {
   const FORECAST_HEADER_HEIGHT = 80;
-  const targetOffset = forecastDataSection.offsetTop - FORECAST_HEADER_HEIGHT;
+  const targetOffset = forecastDataContainer.offsetTop - FORECAST_HEADER_HEIGHT;
 
   if (window.pageYOffset >= targetOffset && areHidden) {
     helpers.show();
@@ -221,4 +220,25 @@ document.addEventListener('scroll', () => {
   }
 });
 
-scrollButton.addEventListener('click', () => window.scroll(0, 0));
+scrollBackButton.addEventListener('click', () => window.scroll(0, 0));
+
+scrollUpButton.addEventListener('click', () => {
+  forecastDataContainer.scrollBy(0, -forecastDataContainer.offsetHeight);
+});
+
+scrollDownButton.addEventListener('click', () => {
+  forecastDataContainer.scrollBy(0, forecastDataContainer.offsetHeight);
+});
+
+forecastDataContainer.addEventListener('scroll', () => {
+  scrollDownButton.style.opacity = 1;
+  scrollUpButton.style.opacity = 1;
+
+  const scrollLimit = forecastDataContainer.offsetHeight * (pagesNumber - 1);
+
+  if (forecastDataContainer.scrollTop === scrollLimit) {
+    scrollDownButton.style.opacity = 0.5;
+  } else if (forecastDataContainer.scrollTop === 0) {
+    scrollUpButton.style.opacity = 0.5;
+  }
+});

@@ -12,25 +12,25 @@
       <h1>Weather App</h1>
       <img id="github-logo" src="./images/github.png" alt="GitHub link" />
     </header>
+    <section id="search-container">
+      <div>
+        <img class="mr-small" src="./svg/location.svg" alt="" />
+        <p>Use my location</p>
+      </div>
+      <div>
+        <input type="text" id="search-input" placeholder="City name..." />
+        <input type="button" id="search-button" value="GO" />
+      </div>
+      <div>
+        <input type="radio" class="mr-small" id="celcius" name="units" checked />
+        <label class="mr-med" for="celcius">Celcius</label>
+        <input type="radio" class="mr-small" id="fahrenheit" name="units" />
+        <label for="fahrenheit">Fahrenheit</label>
+      </div>
+    </section>
+    <div id="message-container"><p></p></div>
     <main>
-      <section class="card" id="search-container">
-        <div>
-          <img class="mr-small" src="./svg/location.svg" alt="" />
-          <p>Use my location</p>
-        </div>
-        <div>
-          <input type="text" id="search-input" placeholder="City name..." />
-          <input type="button" id="search-button" value="GO" />
-        </div>
-        <div>
-          <input type="radio" class="mr-small" id="celcius" name="units" checked />
-          <label class="mr-med" for="celcius">Celcius</label>
-          <input type="radio" class="mr-small" id="fahrenheit" name="units" />
-          <label for="fahrenheit">Fahrenheit</label>
-        </div>
-      </section>
-      <div id="message-container"><p></p></div>
-      <section class="card" id="current-data">
+      <section id="current-data">
         <div>
           <span class="city-name mr-small"></span>
           <img class="country-flag" alt="Country flag icon" />
@@ -70,9 +70,25 @@
         <span class="city-name mr-small"></span>
         <img class="country-flag" alt="" />
       </header>
-      <section id="forecast-data"></section>
+      <section id="forecast-data">
+        <div>
+          <ul></ul>
+          <ul></ul>
+          <ul></ul>
+          <ul></ul>
+          <ul></ul>
+        </div>
+        <div>
+          <div class="scroll-button" id="scroll-up">
+            <img src="./svg/scroll-up.svg" alt="Scroll up button" />
+          </div>
+          <div class="scroll-button" id="scroll-down">
+            <img src="./svg/scroll-down.svg" alt="Scroll down button" />
+          </div>
+        </div>
+      </section>
     </main>
-    <div id="scroll-button">
+    <div class="scroll-button" id="scroll-back">
       <img src="./svg/scroll-back.svg" alt="Scroll back button" />
     </div>
     <script type="module" src="script.js"></script>
