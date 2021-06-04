@@ -1,25 +1,22 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
 
-#logo {
-  width: 80px;
-  height: 80px;
-}
-/* #github-logo {
+#github-logo {
   width: 32px;
   height: 32px;
-} */
+}
 .country-flag {
   width: 24px;
   height: 24px;
 }
-.icon {
-  width: 32px;
-  height: 32px;
-}
 .icon-large {
   width: 120px;
   height: 120px;
+}
+.icon {
+  width: 32px;
+  height: 32px;
 }
 #scroll-button img {
   width: 24px;
@@ -31,28 +28,6 @@
 }
 .mr-med {
   margin-right: 15px;
-}
-
-.alt-font {
-  font-family: 'Roboto', sans-serif;
-}
-.fs-smaaller {
-  font-size: 11px;
-}
-.fs-smaller {
-  font-size: 12px;
-}
-.fs-small {
-  font-size: 14px;
-}
-.fs-med {
-  font-size: 30px;
-}
-.fs-large {
-  font-size: 48px;
-}
-.fs-larger {
-  font-size: 72px;
 }
 
 * {
@@ -67,20 +42,26 @@ html {
 
 body {
   background-color: rgb(15, 45, 90);
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Noto Sans JP', sans-serif;
   color: white;
 }
 
 header {
-  padding-left: 4%;
+  height: 80px;
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 255, 255, 0)
+  );
   box-shadow: 0 0 5px black;
   display: flex;
   align-items: center;
+  font-family: 'Roboto', sans-serif;
 }
 
 body > header {
-  height: 80px;
   background-color: rgb(0, 120, 210);
+  justify-content: space-around;
 }
 
 main {
@@ -100,10 +81,10 @@ div {
 .card {
   width: 96%;
   max-width: 400px;
-  border-radius: 10px;
+  border-radius: 5px;
   padding: 20px;
-  background-color: black;
-  box-shadow: 0 0 5px black;
+  background-color: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 2px black;
 }
 
 #search-container {
@@ -133,15 +114,16 @@ div {
 #search-button {
   width: 80px;
   height: 30px;
-  border: 1px solid rgb(60, 60, 90);
+  border: 1px solid rgb(15, 45, 90);
   border-left: none;
-  background-color: rgb(0, 120, 210);
+  background-color: deepskyblue;
   background-image: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.75),
+    135deg,
+    rgba(255, 255, 255, 0.2),
     rgba(255, 255, 255, 0)
   );
   font-family: inherit;
+  font-weight: bold;
   color: inherit;
 }
 
@@ -150,21 +132,24 @@ div {
   height: 40px;
   justify-content: center;
   align-items: center;
-  font-weight: bold;
+  font-family: 'Roboto Mono', monospace;
 }
 
 #current-data {
   height: 360px;
   flex-direction: column;
+  font-size: 18px;
   display: none;
 }
 
 #current-data > div:first-child {
   align-items: center;
+  font-family: 'Roboto', sans-serif;
+  font-size: 30px;
 }
 
 #current-data > div:nth-child(2) {
-  margin-top: 10px;
+  margin-top: 5px;
   flex-direction: column;
 }
 
@@ -175,6 +160,14 @@ div {
 
 #current-temperature {
   align-items: center;
+}
+
+#temperature {
+  font-size: 72px;
+}
+
+#temp-symbol {
+  font-size: 36px;
 }
 
 #current-data > div:last-child {
@@ -189,7 +182,7 @@ div {
 
 #current-min-max > div {
   align-items: center;
-} 
+}
 
 #current-extras {
   flex-direction: column;
@@ -199,23 +192,19 @@ div {
 
 section + header {
   width: 100%;
-  height: 80px;
   position: fixed;
   top: -100px;
   left: 0;
+  padding: 4%;
   background-color: black;
-  background-image: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.2),
-    rgba(255, 255, 255, 0)
-  );
+  font-size: 30px;
   transition: top 1s ease;
 }
 
 #forecast-data {
   width: 100%;
   margin: 40px 0 80px;
-  background-color: rgba(0, 120, 210, 0.9);
+  background-color: rgb(0, 120, 210);
   flex-direction: column;
   font-weight: bold;
   display: none;
@@ -249,8 +238,17 @@ li > div {
   align-items: center;
 }
 
+.forecast-date > span:first-child,
+.forecast-time {
+  font-size: 12px;
+}
+
+li > div:nth-child(2) {
+  font-size: 11px;
+}
+
 li > div:last-child {
-  width: 87px;
+  width: 85px;
   justify-content: flex-end;
 }
 
@@ -262,7 +260,7 @@ li > div:last-child {
   left: calc(50% - 30px);
   border-radius: 50%;
   background-color: rgba(0, 0, 0, 0.8);
-  box-shadow: 0 0 5px black;
+  box-shadow: 0 0 2px black;
   justify-content: center;
   align-items: center;
   transition: bottom 1s ease;

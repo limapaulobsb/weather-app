@@ -72,12 +72,23 @@ async function fetchForecastData(searchTerm, units) {
   }
 }
 
+function getSourcePath(time, sunrise, sunset, weather) {
+  let dayOrNight = 'night';
+  const sunriseTime = DateTime.fromSeconds(sunrise).toLocaleString(
+    DateTime.TIME_24_SIMPLE
+  );
+  const sunsetTime = DateTime.fromSeconds(sunset).toLocaleString(DateTime.TIME_24_SIMPLE);
+  if (time >= sunriseTime && time < sunsetTime) dayOrNight = 'day';
+  return `./svg/${dayOrNight}/${weather.toLowerCase()}.svg`;
+}
+
 function showCurrentData({ main, name, sys, weather, wind }) {
   const localDateTime = DateTime.now();
-  const imgURL = `https://www.countryflags.io/${sys.country}/shiny/24.png`;
+  const flagURL = `https://www.countryflags.io/${sys.country}/shiny/24.png`;
   const date = localDateTime.toLocaleString(DateTime.DATE_HUGE);
   const time = localDateTime.toLocaleString(DateTime.TIME_24_SIMPLE);
   const temperature = Math.round(main.temp);
+  const iconPath = getSourcePath(time, sys.sunrise, sys.sunset, weather[0].main);
   const minTemp = `${Math.round(main.temp_min)} ${tempSymbol}`;
   const maxTemp = `${Math.round(main.temp_max)} ${tempSymbol}`;
   const descText =
@@ -89,11 +100,12 @@ function showCurrentData({ main, name, sys, weather, wind }) {
   cityNameElems[0].innerText = name;
   cityNameElems[1].innerText = name;
   const countryFlagImgs = document.getElementsByClassName('country-flag');
-  countryFlagImgs[0].src = imgURL;
-  countryFlagImgs[1].src = imgURL;
+  countryFlagImgs[0].src = flagURL;
+  countryFlagImgs[1].src = flagURL;
   document.getElementById('date').innerText = date;
   document.getElementById('time').innerText = time;
   document.getElementById('temperature').innerText = temperature;
+  document.querySelector('.icon-large').src = iconPath;
   document.getElementById('min-temp').innerHTML = minTemp;
   document.getElementById('max-temp').innerHTML = maxTemp;
   document.getElementById('temp-symbol').innerHTML = tempSymbol;
@@ -105,7 +117,7 @@ function showCurrentData({ main, name, sys, weather, wind }) {
   weatherDataElem.style.display = 'flex';
 }
 
-function showForecastData({ list }) {
+function showForecastData({ city, list }) {
   const localDateTime = list.map((obj) => DateTime.fromSeconds(obj.dt));
   const dataElems = document.getElementsByTagName('li');
 
@@ -116,23 +128,29 @@ function showForecastData({ list }) {
     const humidity = list[i].main.humidity;
     const windSpeed = Math.round(list[i].wind.speed * mult);
     const temperature = Math.round(list[i].main.temp);
+    const iconPath = getSourcePath(
+      time,
+      city.sunrise,
+      city.sunset,
+      list[i].weather[0].main
+    );
 
     dataElems[i].innerHTML = `
       <div>
         <div class="forecast-date mr-med">
-          <span class="fs-smaller">${weekday}</span>
+          <span>${weekday}</span>
           <span>${day}</span>
         </div>
-        <div>
-          <span class="fs-smaller">${time}</span>
+        <div class="forecast-time">
+          <span>${time}</span>
         </div>
       </div>
       <div>
-        <span class="fs-smaaller">H: ${humidity}% W: ${windSpeed} ${speedUnit}</span>
+        <span>H: ${humidity}% W: ${windSpeed} ${speedUnit}</span>
       </div>
       <div>
         <span class="mr-med">${temperature} ${tempSymbol}</span>
-        <img class="icon" src="./svg/sun.svg" alt="">
+        <img class="icon" src=${iconPath} alt="">
       </div>
     `;
 
@@ -142,10 +160,10 @@ function showForecastData({ list }) {
   forecastDataSection.style.display = 'flex';
 }
 
-async function loadWeatherData() {
+async function loadWeatherData(searchTerm) {
   message.show('loading...');
   setUnits();
-  const searchTerm = searchInput.value;
+
   const data = [
     fetchCurrentData(searchTerm, units),
     fetchForecastData(searchTerm, units),
@@ -157,8 +175,10 @@ async function loadWeatherData() {
   let timeZoneOffset = result[0].timezone / 3600;
   if (timeZoneOffset > 0) timeZoneOffset = `+${timeZoneOffset}`;
   Settings.defaultZoneName = `UTC${timeZoneOffset}`;
+
   showCurrentData(result[0]);
   showForecastData(result[1]);
+
   message.hide();
 }
 
@@ -180,14 +200,14 @@ window.addEventListener('load', () => {
   createForecastPages();
 });
 
-searchInput.addEventListener('keyup', (e) => {
-  if (e.key === 'Enter') {
-    loadWeatherData();
+searchInput.addEventListener('keyup', (event) => {
+  if (event.key === 'Enter') {
+    loadWeatherData(searchInput.value);
   }
 });
 
 searchButton.addEventListener('click', () => {
-  loadWeatherData();
+  loadWeatherData(searchInput.value);
 });
 
 document.addEventListener('scroll', () => {

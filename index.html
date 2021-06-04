@@ -9,9 +9,8 @@
   </head>
   <body>
     <header>
-      <img id="logo" src="./images/logo.jpg" alt="Logo" />
-      <h1 class="alt-font fs-med">Weather App</h1>
-      <!-- <img id="github-logo" src="./images/github.png" alt="GitHub link" /> -->
+      <h1>Weather App</h1>
+      <img id="github-logo" src="./images/github.png" alt="GitHub link" />
     </header>
     <main>
       <section class="card" id="search-container">
@@ -23,7 +22,7 @@
           <input type="text" id="search-input" placeholder="City name..." />
           <input type="button" id="search-button" value="GO" />
         </div>
-        <div class="fs-small">
+        <div>
           <input type="radio" class="mr-small" id="celcius" name="units" checked />
           <label class="mr-med" for="celcius">Celcius</label>
           <input type="radio" class="mr-small" id="fahrenheit" name="units" />
@@ -33,7 +32,7 @@
       <div id="message-container"><p></p></div>
       <section class="card" id="current-data">
         <div>
-          <span class="city-name mr-small alt-font fs-med"></span>
+          <span class="city-name mr-small"></span>
           <img class="country-flag" alt="Country flag icon" />
         </div>
         <div>
@@ -42,21 +41,21 @@
         </div>
         <div>
           <div id="current-temperature">
-            <span class="mr-small fs-larger" id="temperature"></span>
-            <span class="fs-med" id="temp-symbol"></span>
+            <span class="mr-small" id="temperature"></span>
+            <span id="temp-symbol"></span>
           </div>
           <div>
-            <img class="icon-large" src="./svg/moon.svg" alt="Weather icon" />
+            <img class="icon-large" src="" alt="Weather icon" />
           </div>
         </div>
         <div>
           <div id="current-min-max">
             <div>
-              <img class="icon mr-med" src="./svg/min.svg" alt="Mininum temperature" />
+              <img class="icon mr-small" src="./svg/min.svg" alt="Mininum temperature" />
               <span id="min-temp"></span>
             </div>
             <div>
-              <img class="icon mr-med" src="./svg/max.svg" alt="Maximum temperature" />
+              <img class="icon mr-small" src="./svg/max.svg" alt="Maximum temperature" />
               <span id="max-temp"></span>
             </div>
           </div>
@@ -68,7 +67,7 @@
         </div>
       </section>
       <header>
-        <span class="city-name mr-small alt-font fs-med"></span>
+        <span class="city-name mr-small"></span>
         <img class="country-flag" alt="" />
       </header>
       <section id="forecast-data"></section>
